@@ -1,0 +1,26 @@
+{
+    "id": "com.cal.cloudronapp",
+    "title": "Cal.com",
+    "tagline": "Event-juggling scheduler for everyone.",
+    "author": "Cal.com",
+    "description": "file://DESCRIPTION.md",
+    "version": "0.1.0",
+    "tags": [
+        "meetings",
+        "scheduler",
+        "events",
+        "calendars"
+    ],
+    "website": "https://cal.com",
+    "documentationUrl": "https://docs.cloudron.io/apps/calcom-app/",
+    "contactEmail": "support@cloudron.io",
+    "healthCheckPath": "/",
+    "httpPort": 3000,
+    "addons": {
+        "localstorage": {},
+        "postgresql": {},
+        "sendmail": {}
+    },
+    "minBoxVersion": "7.3.0",
+    "manifestVersion": 2
+}
