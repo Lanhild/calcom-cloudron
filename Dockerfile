@@ -26,6 +26,7 @@ ARG CLOUDRON_MAIL_FROM
 # Prefill the environment for building
 ENV NODE_ENV production \
     NEXT_PUBLIC_WEBAPP_URL=http://NEXT_PUBLIC_WEBAPP_URL_PLACEHOLDER \
+    NEXTAUTH_URL=http://localhost:3000 \
     NEXTAUTH_SECRET=secret \
     CALENDSO_ENCRYPTION_KEY=secret \
     DATABASE_URL="postgres://${CLOUDRON_POSTGRESQL_USERNAME}:${CLOUDRON_POSTGRESQL_PASSWORD}@${CLOUDRON_POSTGRESQL_HOST}:${CLOUDRON_POSTGRESQL_PORT}/${CLOUDRON_POSTGRESQL_DATABASE}" \
@@ -35,8 +36,8 @@ ENV NODE_ENV production \
     EMAIL_SERVER_USER=${CLOUDRON_MAIL_SMTP_USERNAME} \
     EMAIL_SERVER_PASSWORD=${CLOUDRON_MAIL_SMTP_PASSWORD}
 
-RUN yarn install && \
-    yarn build
+RUN yarn install
+RUN yarn build
 
 # Configuration
 RUN ln -s /app/data/env /app/code/.env && \
