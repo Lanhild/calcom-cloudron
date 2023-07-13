@@ -7,12 +7,40 @@ WORKDIR /app/code
 # Fetch upstream
 ARG VERSION=3.0.15
 RUN curl -L https://github.com/calcom/cal.com/archive/refs/tags/v${VERSION}.tar.gz | \
-    tar -zxvf - --strip-components 1 -C /app/code && \
-    ln -s /app/data/env /app/code/.env && \
-    chown -R cloudron:cloudron /app/code
+    tar -zxvf - --strip-components 1 -C /app/code 
 
-ENV NODE_ENV production
-RUN yarn install
+ARG NEXTAUTH_SECRET=secret
+ARG CALENDSO_ENCRYPTION_KEY=secret
+
+ARG CLOUDRON_POSTGRESQL_USERNAME
+ARG CLOUDRON_POSTGRESQL_PASSWORD
+ARG CLOUDRON_POSTGRESQL_HOST
+ARG CLOUDRON_POSTGRESQL_PORT
+ARG CLOUDRON_POSTGRESQL_DATABASE
+ARG CLOUDRON_MAIL_SMTP_HOST
+ARG CLOUDRON_MAIL_SMTP_PORT
+ARG CLOUDRON_MAIL_SMTP_USERNAME
+ARG CLOUDRON_MAIL_SMTP_PASSWORD
+ARG CLOUDRON_MAIL_FROM
+
+# Prefill the environment for building
+ENV NODE_ENV production \
+    NEXT_PUBLIC_WEBAPP_URL=http://NEXT_PUBLIC_WEBAPP_URL_PLACEHOLDER \
+    NEXTAUTH_SECRET=secret \
+    CALENDSO_ENCRYPTION_KEY=secret \
+    DATABASE_URL="postgres://${CLOUDRON_POSTGRESQL_USERNAME}:${CLOUDRON_POSTGRESQL_PASSWORD}@${CLOUDRON_POSTGRESQL_HOST}:${CLOUDRON_POSTGRESQL_PORT}/${CLOUDRON_POSTGRESQL_DATABASE}" \
+    EMAIL_FROM=${CLOUDRON_MAIL_FROM} \
+    EMAIL_SERVER_HOST=${CLOUDRON_MAIL_SMTP_HOST} \
+    EMAIL_SERVER_PORT=${CLOUDRON_MAIL_SMTP_PORT} \
+    EMAIL_SERVER_USER=${CLOUDRON_MAIL_SMTP_USERNAME} \
+    EMAIL_SERVER_PASSWORD=${CLOUDRON_MAIL_SMTP_PASSWORD}
+
+RUN yarn install && \
+    yarn build
+
+# Configuration
+RUN ln -s /app/data/env /app/code/.env && \
+    chown -R cloudron:cloudron /app/code
 
 EXPOSE 3000
 
