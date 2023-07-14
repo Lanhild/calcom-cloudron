@@ -18,13 +18,13 @@ ENV NODE_ENV production \
     NODE_OPTIONS=--max-old-space-size=${MAX_OLD_SPACE_SIZE}
 
 RUN cp /app/code/.env.example /app/code/.env && \
-    sed -e "s,NEXTAUTH_SECRET=.*,NEXTAUTH_SECRET=${NEXTAUTH_SECRET}," -i /app/code/.env && \
-    sed -e "s,CALENDSO_ENCRYPTION_KEY=.*,CALENDSO_ENCRYPTION_KEY=${CALENDSO_ENCRYPTION_KEY}," -i /app/code/.env
+    sed -i 's|NEXTAUTH_SECRET=.*|NEXTAUTH_SECRET='"$(openssl rand -base64 32)"'|g' /app/code/.env && \
+    sed -i 's|CALENDSO_ENCRYPTION_KEY=.*|CALENDSO_ENCRYPTION_KEY='"$(openssl rand -base64 32)"'|g' /app/code/.env
 
-RUN yarn global add turbo && \
-    yarn config set network-timeout 1000000000 -g && \
-    turbo prune --scope=@calcom/web --docker
-RUN yarn install
+RUN yarn config set httpTimeout 1200000 && \
+    npx turbo prune --scope=@calcom/web --docker && \
+    yarn install
+
 RUN yarn build
 
 # Cleanup
@@ -37,7 +37,6 @@ RUN ln -s /app/data/env /app/code/.env && \
 EXPOSE 3000
 
 COPY start.sh /app/pkg
-
 RUN chmod +x /app/pkg/start.sh
 
 CMD [ "/app/pkg/start.sh" ]

@@ -63,4 +63,6 @@ sed -e "s,NEXT_PUBLIC_WEBAPP_URL=.*,NEXT_PUBLIC_WEBAPP_URL=${NEXT_PUBLIC_WEBAPP_
 -i /app/data/env
 
 echo "==> Starting Cal.com"
+exec npx prisma migrate deploy --schema /app/code/prisma/schema.prisma && \
+	 npx ts-node --transpile-only /app/code/packages/prisma/seed-app-store.ts
 exec yarn start
