@@ -5,7 +5,7 @@ RUN mkdir -p /app/code /app/pkg
 WORKDIR /app/code
 
 # Fetch upstream
-ARG VERSION=3.0.15
+ARG VERSION=3.1.4
 RUN curl -L https://github.com/calcom/cal.com/archive/refs/tags/v${VERSION}.tar.gz | \
     tar -zxvf - --strip-components 1 -C /app/code 
 
@@ -36,8 +36,9 @@ RUN ln -s /app/data/env /app/code/.env && \
 
 EXPOSE 3000
 
-COPY start.sh /app/pkg
-RUN chmod +x /app/pkg/start.sh
+COPY start.sh replace-placeholder.sh /app/pkg/
+RUN chmod +x /app/pkg/start.sh && \
+    chmod +x /app/pkg/replace-placeholder.sh
 
 CMD [ "/app/pkg/start.sh" ]
 
