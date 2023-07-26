@@ -24,7 +24,7 @@ if [[ ! -f /app/data/env ]]; then
     CALENDSO_ENCRYPTION_KEY="$(openssl rand -base64 32)"
     DATABASE_URL=postgres://${CLOUDRON_POSTGRESQL_USERNAME}:${CLOUDRON_POSTGRESQL_PASSWORD}@${CLOUDRON_POSTGRESQL_HOST}:${CLOUDRON_POSTGRESQL_PORT}/${CLOUDRON_POSTGRESQL_DATABASE}
 
-    sed -i 's|NEXT_PUBLIC_LICENSE_CONSENT=.*|NEXT_PUBLIC_LICENSE_CONSENT='"true"'|g' \
+    sed -e 's|NEXT_PUBLIC_LICENSE_CONSENT=.*|NEXT_PUBLIC_LICENSE_CONSENT='"true"'|g' \
 		-e 's|LICENSE=.*|LICENSE='""'|g' \
 		-e 's|NEXT_PUBLIC_WEBAPP_URL=.*|NEXT_PUBLIC_WEBAPP_URL='"${NEXT_PUBLIC_WEBAPP_URL}"'|g' \
 		-e 's|NEXTAUTH_SECRET=.*|NEXTAUTH_SECRET='"${NEXTAUTH_SECRET}"'|g' \
@@ -64,5 +64,6 @@ sed -e 's|NEXT_PUBLIC_WEBAPP_URL=.*|NEXT_PUBLIC_WEBAPP_URL='"${NEXT_PUBLIC_WEBAP
 
 echo "==> Starting Cal.com"
 exec yarn workspace @calcom/prisma db-deploy
-exec /app/pkg/replace-placeholder.sh
+exec bash /app/pkg/replace-placeholder.sh localhost:3000 ${CLOUDRON_APP_ORIGIN} && \
+	 bash /app/pkg/replace-placeholder.sh http://localhost:3000 ${CLOUDRON_APP_ORIGIN}
 exec yarn start
